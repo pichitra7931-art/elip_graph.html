@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>Ellipse Graph Explorer</title>
+
+<style>
+
+body{
+font-family:Tahoma;
+text-align:center;
+background:#f4f6fb;
+}
+
+canvas{
+background:white;
+border:1px solid #ccc;
+}
+
+.controls{
+margin-top:20px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h2>กราฟวงรีจากสมการ x²/a² + y²/b² = 1</h2>
+
+<canvas id="graph" width="600" height="600"></canvas>
+
+<div class="controls">
+
+<label>a :
+<input type="range" id="a" min="2" max="10" value="6">
+<span id="aval">6</span>
+</label>
+
+<br><br>
+
+<label>b :
+<input type="range" id="b" min="1" max="8" value="4">
+<span id="bval">4</span>
+</label>
+
+</div>
+
+<script>
+
+const canvas=document.getElementById("graph");
+const ctx=canvas.getContext("2d");
+
+function draw(){
+
+let a=Number(document.getElementById("a").value);
+let b=Number(document.getElementById("b").value);
+
+document.getElementById("aval").innerText=a;
+document.getElementById("bval").innerText=b;
+
+ctx.clearRect(0,0,600,600);
+
+let scale=25;
+let centerX=300;
+let centerY=300;
+
+let c=Math.sqrt(a*a-b*b);
+
+/* grid */
+
+ctx.strokeStyle="#ddd";
+
+for(let i=0;i<=600;i+=scale){
+
+ctx.beginPath();
+ctx.moveTo(i,0);
+ctx.lineTo(i,600);
+ctx.stroke();
+
+ctx.beginPath();
+ctx.moveTo(0,i);
+ctx.lineTo(600,i);
+ctx.stroke();
+
+}
+
+/* axis */
+
+ctx.strokeStyle="black";
+
+ctx.beginPath();
+ctx.moveTo(0,centerY);
+ctx.lineTo(600,centerY);
+ctx.stroke();
+
+ctx.beginPath();
+ctx.moveTo(centerX,0);
+ctx.lineTo(centerX,600);
+ctx.stroke();
+
+/* ellipse */
+
+ctx.strokeStyle="red";
+ctx.lineWidth=3;
+
+ctx.beginPath();
+
+for(let t=0;t<=Math.PI*2;t+=0.01){
+
+let x=a*Math.cos(t);
+let y=b*Math.sin(t);
+
+let px=centerX + x*scale;
+let py=centerY - y*scale;
+
+if(t==0)
+ctx.moveTo(px,py);
+else
+ctx.lineTo(px,py);
+
+}
+
+ctx.stroke();
+
+/* center */
+
+ctx.fillStyle="blue";
+
+ctx.beginPath();
+ctx.arc(centerX,centerY,5,0,Math.PI*2);
+ctx.fill();
+
+ctx.fillText("(0,0)",centerX+8,centerY-8);
+
+/* vertices */
+
+ctx.fillStyle="purple";
+
+let vx1=centerX + a*scale;
+let vx2=centerX - a*scale;
+
+ctx.beginPath();
+ctx.arc(vx1,centerY,5,0,Math.PI*2);
+ctx.fill();
+
+ctx.beginPath();
+ctx.arc(vx2,centerY,5,0,Math.PI*2);
+ctx.fill();
+
+ctx.fillText("("+a+",0)",vx1+5,centerY-5);
+ctx.fillText("(-"+a+",0)",vx2-45,centerY-5);
+
+/* co vertices */
+
+let vy1=centerY - b*scale;
+let vy2=centerY + b*scale;
+
+ctx.beginPath();
+ctx.arc(centerX,vy1,5,0,Math.PI*2);
+ctx.fill();
+
+ctx.beginPath();
+ctx.arc(centerX,vy2,5,0,Math.PI*2);
+ctx.fill();
+
+ctx.fillText("(0,"+b+")",centerX+5,vy1-5);
+ctx.fillText("(0,-"+b+")",centerX+5,vy2+15);
+
+/* foci */
+
+ctx.fillStyle="green";
+
+let fx1=centerX + c*scale;
+let fx2=centerX - c*scale;
+
+ctx.beginPath();
+ctx.arc(fx1,centerY,5,0,Math.PI*2);
+ctx.fill();
+
+ctx.beginPath();
+ctx.arc(fx2,centerY,5,0,Math.PI*2);
+ctx.fill();
+
+ctx.fillText("F("+c.toFixed(2)+",0)",fx1+5,centerY+15);
+ctx.fillText("F(-"+c.toFixed(2)+",0)",fx2-65,centerY+15);
+
+/* show c */
+
+ctx.fillStyle="green";
+ctx.font="16px Tahoma";
+ctx.fillText("c = √(a² - b²) = "+c.toFixed(2),20,30);
+
+}
+
+document.querySelectorAll("input").forEach(slider=>{
+slider.addEventListener("input",draw);
+});
+
+draw();
+
+</script>
+
+</body>
+</html>
